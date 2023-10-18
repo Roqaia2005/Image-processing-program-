@@ -1,4 +1,3 @@
-
 // FCAI – OOP Programming – 2023 - Assignment 1
 // Program Name:				ImgProccesing.cpp
 // Last Modification Date:	8/10/2023
@@ -17,6 +16,8 @@
 #include "bmplib.cpp"
 
 using namespace std;
+unsigned char image[SIZE][SIZE];
+
 unsigned char grayImage[SIZE][SIZE];
 unsigned char darkImage[SIZE][SIZE];
 unsigned char lightImage[SIZE][SIZE];
@@ -31,19 +32,24 @@ unsigned char croppedImage[SIZE][SIZE];
 
 //Functions Declaration//
 void loadGrayImage ();
+void loadImage ();
 void loadImage1 ();
 void loadImage2 ();
 void BlackAndWhite (); //filter 1
 void invertGray() ;//filter 2
 void merge(); //filter 3
 void flipGray();//filter 4
-void darken();void lighten(); //filter 5
-void rotateGray();//filter 6
+void darken();void lighten(); //filter 6
+void rotateGray();//filter 5
 void detect();//filter 7
+void enlarge_quarter();//filter 8
 void mirrorGray();//filter a
+void Shuffle_Image();//filter b
 void cropGray();//filter d
-//*****functions to save images after processing
+void skew_image();//filter e
 
+//*****functions to save images after processing
+void saveImage ();
 void saveMergedImage ();
 void saveFlippedImage ();
 void saveDarkImg ();
@@ -132,17 +138,35 @@ int main()
 
                     showGSBMP(grayImage);
                     break;
+                case '8': //filter 8: enlarge a quarter of an image
+                    loadImage ();
+                    enlarge_quarter();
+                     saveImage ();
+                    showGSBMP( image);
+                    break;
                 case 'a': //filter a: mirror Image
                     loadGrayImage();
                     mirrorGray();
                     saveGrayImg();
                     showGSBMP(grayImage);
+                case 'b': //filter 8: enlarge a quarter of an image
+                    loadImage ();
+                    Shuffle_Image();
+                    saveImage ();
+                    showGSBMP(image);
+                    break;
                 case 'd':
                     loadGrayImage();
                     cropGray();
                     savecroppedImg();
                     showGSBMP(croppedImage);
 
+                    break;
+                case 'e': //filter e: skew an image horizontally
+                    loadImage ();
+                    skew_image();
+                    saveImage ();
+                    showGSBMP(image);
                     break;
                 default:
                     cout<<"Invalid filter\n";
@@ -154,10 +178,36 @@ int main()
 
     }
 
-  return 0;
+    return 0;
 }
 
 //*****************Functions Definitions*******************//
+
+void loadImage () {
+    char imageFileName[100];
+
+    // Get gray scale image file name
+    cout << "Enter the source image file name: ";
+    cin >> imageFileName;
+
+    // Add to it .bmp extension and load image
+    strcat (imageFileName, ".bmp");
+    readGSBMP(imageFileName, image);
+}
+//_________________________________________
+void saveImage () {
+    char imageFileName[100];
+
+    // Get gray scale image target file name
+    cout << "Enter the target image file name: ";
+    cin >> imageFileName;
+
+    // Add to it .bmp extension and load image
+    strcat (imageFileName, ".bmp");
+    writeGSBMP(imageFileName, image);
+}
+
+//-----------------------------------------------------
 
 void loadGrayImage () { // function to load gray image we will make change on it
     char imageFileName[100];
@@ -251,16 +301,16 @@ void merge(){
 
 // function to save merged image
 void saveMergedImage () {
-        char imageFileName[100];
+    char imageFileName[100];
 
-        // Get gray scale image target file name
-        cout << "Enter the target image file name: ";
-        cin >> imageFileName;
+    // Get gray scale image target file name
+    cout << "Enter the target image file name: ";
+    cin >> imageFileName;
 
-        // Add to it .bmp extension and load image
-        strcat (imageFileName, ".bmp");
+    // Add to it .bmp extension and load image
+    strcat (imageFileName, ".bmp");
 
-        writeGSBMP(imageFileName,mergedImage);
+    writeGSBMP(imageFileName,mergedImage);
 
 }
 
@@ -473,6 +523,80 @@ void detect(){
     }
 
 }
+//___________________________________________________(enlarge filter NO 8)_________________
+void enlarge_quarter(){
+
+    int quarter;
+    int arr[256][256];//define new arr that will hold new enlarged quarter
+    cout << "Enter the quarter ";//ask user and take the quarter wanted
+    cin >> quarter;
+    if (quarter == 1) {
+        int x = 0, y = 0;//starting coordinates of new image
+        for (int i = 0; i < SIZE / 2; i++) {//nested loop to take quarter 1 and enlarge it
+            for (int j = 0; j < SIZE / 2; j += 1) {
+                arr[x][y] = image[i][j];//each pixel enlarge to 4 pixels
+                arr[x + 1][y] = image[i][j];
+                arr[x][y + 1] = image[i][j];
+                arr[x + 1][y + 1] = image[i][j];
+                y += 2;
+            }
+            y = 0;
+            x += 2;
+        }
+    }
+
+
+    if(quarter==2){
+        int x = 0, y = 0;//starting coordinates of new image
+        for (int i = 0; i < SIZE/2; i++) {//nested loop to take quarter 2 and enlarge it
+            for (int j = SIZE/2; j < SIZE ; j += 1) {
+                arr[x][y] = image[i][j];//each pixel enlarge to 4 pixels
+                arr[x + 1][y] = image[i][j];
+                arr[x][y + 1] = image[i][j];
+                arr[x + 1][y + 1] = image[i][j];
+                y+=2;
+            }
+            y=0;
+            x+=2;
+        }
+
+    }
+    if (quarter == 3) {
+        int x = 0, y = 0;//starting coordinates of new image
+        for (int i = SIZE / 2; i < SIZE; i++) {//nested loop to take quarter 3 and enlarge it
+            for (int j = 0; j < SIZE / 2; j += 1) {
+                arr[x][y] = image[i][j];//each pixel enlarge to 4 pixels
+                arr[x + 1][y] = image[i][j];
+                arr[x][y + 1] = image[i][j];
+                arr[x + 1][y + 1] = image[i][j];
+                y += 2;
+            }
+            y = 0;
+            x += 2;
+        }
+    }
+    if(quarter==4){
+        int x = 0, y = 0;//starting coordinates of new image
+        for (int i = SIZE/2; i < SIZE; i++) {//nested loop to take quarter 4 and enlarge it
+            for (int j = SIZE/2; j < SIZE ; j += 1) {
+                arr[x][y] = image[i][j];//each pixel enlarge to 4 pixels
+                arr[x + 1][y] = image[i][j];
+                arr[x][y + 1] = image[i][j];
+                arr[x + 1][y + 1] = image[i][j];
+                y+=2;
+            }
+            y=0;
+            x+=2;
+        }
+
+    }
+
+    for (int i = 0; i < SIZE; i++) {// lastly nested loop to copy enlarged arr to image.
+        for (int j = 0; j < SIZE; j++) {
+            image[i][j] = arr[i][j];
+        }
+    }
+}
 //filter (a) to mirror 1/2 gray image
 void mirrorGray(){
     cout<<"Mirror (l)eft, (r)ight, (u)pper, (d)own side?";
@@ -515,9 +639,9 @@ void mirrorGray(){
             }
 
         }
-        }
-
     }
+
+}
 
 
 void saveGrayImg () { // function to save gray image
@@ -533,7 +657,217 @@ void saveGrayImg () { // function to save gray image
     writeGSBMP(imageFileName,grayImage);
 
 }
+//_______________________________(shuffle image_filter(b))___________________
 
+void Shuffle_Image() {//The function Shuffle_Image() is defined.
+    cout <<"Enter your order of quarters";//The user is prompted to enter the order of quarters.
+
+    int q_arr[4];//An integer array q_arr is declared to store the order of quarters.
+
+    int new_shuffled[SIZE][SIZE];//A 2-dimensional integer array new_shuffled is declared to store the shuffled image.
+
+    for (int i = 0; i < 4; i++) {//A loop is used to read and store the user's input for the order of quarters.
+        cin >> q_arr[i];
+    }
+    for (int i = 0; i < 4; i++) {//A loop is used to iterate over indixes
+        if (i == 0) {//this means that we will Transfer the quarter that user want into the //first quarter// in the new image
+            if (q_arr[i] == 1) {//(if statements) to handle each quarter that user wants
+                int m = 0, n = 0;//start coordinates of 1st quarter
+                for (int j = 0; j < SIZE/2; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];//The elements  of the image array are copied into  new_shuffled array.
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            } else if (q_arr[i] == 2) {
+
+                int m = 0, n = 0;
+                for (int j = 0; j < SIZE / 2; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            } else if (q_arr[i] == 3) {
+
+                int m = 0, n = 0;
+                for (int j = SIZE/2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            } else if (q_arr[i] == 4) {
+
+                int m = 0, n = 0;
+                for (int j = SIZE / 2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            }
+        }
+
+        else if (i == 1) {//this means that we will Transfer the quarter that user want into the //second quarter// to the new image
+            if (q_arr[i] == 1) {//(if statements) to handle each quarter that user wants
+                int m = 0, n = SIZE/2;//start coordinates of 2nd quarter
+                for (int j = 0; j < SIZE/2; j++) {
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = SIZE/2;
+                    m++;
+                }
+            } else if (q_arr[i] == 2) {
+
+                int m = 0, n = SIZE/2;
+                for (int j = 0; j < SIZE / 2; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n =SIZE/2;
+                    m++;
+                }
+            } else if (q_arr[i] == 3) {
+
+                int m = 0, n = SIZE/2;
+                for (int j = SIZE / 2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = SIZE/2;
+                    m++;
+                }
+            } else if (q_arr[i] == 4) {
+
+                int m = 0, n = SIZE/2;
+                for (int j = SIZE / 2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = SIZE/2;
+                    m++;
+                }
+            }
+        }
+
+
+        else if (i == 2) {//this means that we will Transfer the quarter that user want into the //third quarter// to the new image
+            if (q_arr[i] == 1) {//(if statements) to handle each quarter that user wants
+                int m = SIZE / 2, n = 0;//start coordinates of 3rd quarter
+                for (int j = 0; j < SIZE/2; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            } else if (q_arr[i] == 2) {
+
+                int m = SIZE / 2, n = 0;
+                for (int j = 0; j < SIZE / 2; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            } else if (q_arr[i] == 3) {
+
+                int m = SIZE / 2, n = 0;
+                for (int j = SIZE / 2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            } else if (q_arr[i] == 4) {
+
+                int m = SIZE / 2, n = 0;
+                for (int j = SIZE / 2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = 0;
+                    m++;
+                }
+            }
+        }
+
+        else if (i == 3) {//this means that we will Transfer the quarter that user want into the //forth quarter// to the new image
+            if (q_arr[i] == 1) {//(if statements) to handle each quarter that user wants
+                int m = SIZE / 2,n= SIZE/2;//start coordinates of 4th quarter
+                for (int j = 0; j < SIZE/2; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = SIZE/2;
+                    m++;
+                }
+            } else if (q_arr[i] == 2) {
+
+                int m = SIZE / 2,n= SIZE/2;
+                for (int j = 0; j < SIZE / 2; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = SIZE/2;
+                    m++;
+                }
+            } else if (q_arr[i] == 3) {
+
+                int m = SIZE / 2, n=SIZE/2;
+                for (int j = SIZE / 2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = 0; k < SIZE / 2; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = SIZE/2;
+                    m++;
+                }
+            } else if (q_arr[i] == 4) {
+
+                int m = SIZE / 2,n= SIZE/2;
+                for (int j = SIZE / 2; j < SIZE; j++) {//nested loop with specified coordinates that user decide
+                    for (int k = SIZE / 2; k < SIZE; k++) {
+                        new_shuffled[m][n] = image[j][k];
+                        n++;
+                    }
+                    n = SIZE/2;
+                    m++;
+                }
+            }
+        }
+
+
+    }
+
+    for (int i = 0; i < SIZE; i++) {// loop is used to copy the shuffled image from the new_shuffled array back into the image array.
+        for (int j = 0; j < SIZE; j++) {
+            image[i][j] = new_shuffled[i][j];
+        }
+    }
+}
 
 // filter (d) to crop gray image
 void cropGray(){
@@ -570,4 +904,41 @@ void savecroppedImg () { // function to save cropped image
     writeGSBMP(imageFileName,croppedImage);
 
 }
+//________________________(skew horizontally(filter e))________________________
+void skew_image() {
+    unsigned char IMG_1[SIZE][SIZE];
+    unsigned char IMG_2[SIZE][SIZE];//initializes two arrays to hold skew image during program
+    for(int i=0;i<SIZE;++i){
+        for(int j=0;j<SIZE;++j){ //nested loop to initializes all element to grayscale
+            IMG_1[i][j]=255;
+            IMG_2[i][j]=255;
+        }
+    }
+    double ang;
+    cout<<"Enter the angle of skew";//prompts the user to enter the angle of skew
+    cin>>ang;
+    ang=(ang*22)/(180*7);//angle is  converted to radians
+    int x=(int)(SIZE/(1+1/tan(ang)));//This line calculates x that will be added to each row in the image
+    double STP=SIZE-x;//These variables are used to control the positioning of the skewed image.
+    double MOV=STP/SIZE;
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){//nested loops to copy each pixle in original image to  corresponding position in IMG_1
+            IMG_1[i][(j*x)/SIZE]=image[i][j];
+        }
+    }
+    for(int i=0;i<SIZE;i++){//The starting position (STP) is adjusted in each row,
+                                // and the pixels are assigned to the corresponding positions in IMG_2.
+        for(int j=(int)STP;j<STP+x;j++){
+            IMG_2[i][j]=IMG_1[i][(int)(j-STP)];
+        }
+        STP-=MOV;
+    }
+    for(int i=0;i<SIZE;i++){//Finally,copy the skew image into original image .
+        for(int j=0;j<SIZE;++j){
+            image[i][j]=IMG_2[i][j];
+        }
+    }
 
+
+}
+//______________________________
