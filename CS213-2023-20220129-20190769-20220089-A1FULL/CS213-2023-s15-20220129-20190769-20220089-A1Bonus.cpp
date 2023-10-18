@@ -18,14 +18,19 @@
 
 using namespace std;
 unsigned char coloredImage[SIZE][SIZE][RGB];
-
+unsigned char coloredImage2[SIZE][SIZE][RGB];
 unsigned char black_white_image[SIZE][SIZE]; //black and white img
 unsigned char flippedColoredImg[SIZE][SIZE][RGB];
 unsigned char coloredInvertedImg[SIZE][SIZE][RGB];
 
 unsigned char croppedColoredImage[SIZE][SIZE][RGB];
 
+unsigned char mergeColoredImg[SIZE][SIZE][RGB];
+unsigned char shrinkcoloredImg[SIZE][SIZE][RGB];
 
+unsigned char darkerandlightercolorImage[SIZE][SIZE][RGB];
+unsigned char blurColoredImg[SIZE][SIZE][RGB];
+unsigned char skewverticallycoloredImg[SIZE][SIZE][RGB];
 //Functions Declaration//
 void loadColoredImage ();
 void BlackAndWhiteColored(); //filter 1
@@ -34,6 +39,13 @@ void flipColored();//filter 4
 void detectColored();//filter 7
 void mirrorColored();//filter a
 void cropColored();//filter d
+void mergedColored() ;//filter 3
+void shrinkColored();//filter 9
+void blurColored();//filter c
+void choose();//filter 6
+void darkercolored();//filter 6
+void lighterColored();//filter 6
+void skewverticallyColored();//filter f
 //*****functions to save images after processing
 void saveBlackWhite ();
 
@@ -89,12 +101,24 @@ int main()
                     saveInvertedColoredImg();
                     showRGBBMP(coloredInvertedImg);
                     break;
+                case '3':// filter to merge two color images together
+                   loadColoredImage();
+                    mergedColored();
+                    saveColoredImg();
+                    showRGBBMP(mergeColoredImg);
+                    break;
 
                 case '4': //filter 4 : Flip colored Image
                     loadColoredImage();
                     flipColored();
                     saveFlippedColoredImage();
                     showRGBBMP(flippedColoredImg);
+                    break;
+                case'6':// filter to make colored images reach 50% lighter or darker
+                      loadColoredImage();
+                    choose();
+                    saveColoredImg();
+                    showRGBBMP(darkerandlightercolorImage);
                     break;
 
                 case '7': //filter 7: Detect colored Image
@@ -109,12 +133,24 @@ int main()
                    saveColoredImg();
                    showRGBBMP(coloredImage);
                     break;
+                case'c':// filter to blur colored images
+                    loadColoredImage();
+                   blurColored();
+                   saveColoredImg();
+                   showRGBBMP(blurColoredImg);
+                    break;
 
                 case 'd': // filter d crop colored image
                     loadColoredImage();
                     cropColored();
                     saveCroppedColoredImg();
                     showRGBBMP(croppedColoredImage);
+                    break;
+                case 'f':
+                  loadColoredImage();
+                   skewverticallyColored();
+                   saveColoredImg();
+                   showRGBBMP(skewverticallycoloredImg);
                     break;
                 default:
                     cout<<"Invalid filter\n";
@@ -219,7 +255,20 @@ void saveInvertedColoredImg(){ //function to save inverted colored image
     writeRGBBMP(imageFileName,coloredInvertedImg);
 
 }
+//____________________filter 3__________________________
+// merge filter which take average of the two images i want to merge
 
+void mergecolor(){
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                //we make nested loop that loop over every pixel
+
+                mergeColoredImg[i][j][k] = (coloredImage[i][j][k]+coloredImage2[i][j][k])/2;//we make sumation betweem two images and divide it bu 2to make them blending
+            }
+        }
+    }
+}
 //********************************//
 // filter 4 flip colored image
  void flipColored(){
@@ -270,10 +319,37 @@ void saveFlippedColoredImage () { //function to save flipped colored  image
 
 }
 
+//filter 6__________
+void darkercolor(){//darken filter it make the image darker to 50%
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                            //we make nested loop that loop over every pixel
+                darkerandlightercolorImage[i][j][k]+=coloredImage[i][j][k]/4;//to make image darker we will reduce it to its quarter to reach its darker mode
+            }
+        }
+    }
+}
+void lightercolor(){ //darken filter it make the image lighter to 50%
 
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                //we make nested loop that loop over every pixel
+                darkerandlightercolorImage[i][j][k]+=coloredImage[i][j][k]+(255-coloredImage[i][j][k])/2;// we make this equation to reach to the highest light for the image
+            }
+        }
+    }
+}
+void choose(){ //function choose that help user to choose what change he need to make in image
 
-
-
+    cout<<"Do you want to (d)arken or (l)ighten?(enter one character dor l)"<<"\n";
+    cin>>type;//the user will enter char d or l to choode the change he want
+    if(type=='d'){
+        darkercolored();
+}
+else lighterColored();
+}
 
 // filter 7 detect colored image
 void detectColored(){
@@ -323,8 +399,87 @@ void saveColoredImg () { // function to save colored image
 
 }
 
+//_____________________filter 9______________________
 
+void shrinkColored(int d){
+    if(d==1/4){
+        void shrinkcolorquarter();
+    }
+    else if(d==1/3){
+        void shrinkcolorthird();
+    }
+    else {
+        void shrinkcolorhalf();
+    }
+}
+// to shrink the image to its quarter the user give the amount of how toshrink
+void shrinkcolorquarter(){
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                shrinkcoloredImg[i][j][k]=255; // give the pixel of the image white color by equal it to zero
+            }
+        }
+    }
 
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                // condition to avoid the image to be out of range
+                if((i*4)<=255&&(j*4)<=255){
+                    shrinkcoloredImg[i][j][k]=coloredImage[i*4][j*4][k]; // to reduce image to its quarter we multiply it by 4
+                }
+            }
+        }
+    }
+}
+// to shrink the image to its third the user give the amount of how toshrink
+
+void shrinkcolorthird(){
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                shrinkcoloredImg[i][j][k]=255;
+            }
+        }
+    }
+
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                // condition to avoid the image to be out of range
+                if((i*3)<=255&&(j*3)<=255){
+                    shrinkcoloredImg[i][j][k]=coloredImage[i*3][j*3][k];// to reduce image to its third we multiply it by 4
+                }
+            }
+        }
+    }
+}
+// to shrink the image to its third the user give the amount of how toshrink
+
+void shrinkcolorhalf() {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            for (int k = 0; k < RGB; k++) {
+                shrinkcoloredImg[i][j][k] = 255;
+            }
+        }
+    }
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            for (int k = 0; k < RGB; k++) {
+                // in this case we make it 1.95 not 2 as when multiply it by 2 it will not reduce to half of image as we need
+                float x = 1.95;
+                // condition to avoid the image to be out of range
+
+                if (int(i * x) <= 255 && int(j * x) <= 255) {
+                    shrinkcoloredImg[i][j][k] = coloredImage[int(i * x)][int(j * x)][k];
+                }
+            }
+        }
+    }
+}
 //*************************************//
 // filter a mirror 1/2 colored image
 void mirrorColored(){
@@ -386,7 +541,30 @@ void mirrorColored(){
         }
     }
 
+//______________filter a________________________
+void blurColored(){
+// this function is used to take photo from user and blur it
+    for(int i=1;i<SIZE;i++){
+        for(int j=1;j<SIZE;j++){
+            for(int k=0;k<RGB;k++){
+                int x =-1,y=-1,sum=0,num =0;
+                while(x<=20){
+                    while(y<=20){
+                        // to give strong blur we sum 20 pixels together
+                        sum += coloredImage[i+x][j+y][k] ;
+                        y++;
+                        num++;
+                    }
+                    x++;
+                }
+                blurColoredImg[i-1][j-1][k]=sum/num;
+// we make every pixel in range to be equal the average of 20 pixels
+            }
+        }
 
+    }
+
+}
 //filter d crop colored image
 void cropColored() {
     for (int i = 0; i < SIZE; i++) {
@@ -423,5 +601,6 @@ void saveCroppedColoredImg () { // function to save cropped colored image
     writeRGBBMP(imageFileName,croppedColoredImage);
 
 }
+
 
 
