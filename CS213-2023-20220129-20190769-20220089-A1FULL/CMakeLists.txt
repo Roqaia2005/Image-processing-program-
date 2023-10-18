@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.26)
+project(CS213_2023_20220129_20190769_20220089_A1FULL)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(.)
+
+add_executable(CS213_2023_20220129_20190769_20220089_A1FULL
+        bmplib.cpp
+        bmplib.h
+        CS213-2023-s15-20220129-20190769-20220089-A1Bonus.cpp
+        CS213-2023-s15-20220129-20190769-20220089-A1FULL.cpp)
