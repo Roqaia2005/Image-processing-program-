@@ -28,6 +28,9 @@ unsigned char flippedImg[SIZE][SIZE];
 unsigned char invertedImg[SIZE][SIZE];
 unsigned char rotatedImage[SIZE][SIZE];
 unsigned char croppedImage[SIZE][SIZE];
+unsigned char blurImg[SIZE][SIZE];
+unsigned char shrinkImg[SIZE][SIZE];
+unsigned char skewvirticalImg[SIZE][SIZE];
 
 
 //Functions Declaration//
@@ -42,6 +45,9 @@ void flipGray();//filter 4
 void darken();void lighten(); //filter 6
 void rotateGray();//filter 5
 void detect();//filter 7
+void shrink();//filter 9
+void blur();//filter c
+void skew_virtically();//filter f
 void enlarge_quarter();//filter 8
 void mirrorGray();//filter a
 void Shuffle_Image();//filter b
@@ -58,7 +64,9 @@ void saveInvertedImg ();
 void saveRotatedImg ();
 void saveGrayImg();
 void savecroppedImg ();
-
+void saveblurImg();
+void saveshrinkImg();
+void saveskewvirticalImg();
 void choose();//function choose that help user to choose what change he wants to make in image(darken or lighten)
 
 //**main program**//
@@ -144,6 +152,12 @@ int main()
                      saveImage ();
                     showGSBMP( image);
                     break;
+                case 9:// filter 9: shrink of an image
+                   loadImage();
+                   shrink();
+                   saveshrinkImg();
+                   showGSBMP(shrinkImg);
+                   break;
                 case 'a': //filter a: mirror Image
                     loadGrayImage();
                     mirrorGray();
@@ -155,6 +169,12 @@ int main()
                     saveImage ();
                     showGSBMP(image);
                     break;
+                case 'c':// filter c: blur of image
+                    loadGImage();
+                     blur();
+                     saveblurImg();
+                     showGSBMP(blurImg);
+                     break;
                 case 'd':
                     loadGrayImage();
                     cropGray();
@@ -168,6 +188,14 @@ int main()
                     saveImage ();
                     showGSBMP(image);
                     break;
+                case 'f':// filter f: skew an image vertically
+                  loadImage();
+                    double angle;
+                    cin>>angle;
+                  skew_virtically(angle);
+                  saveskewvirticalImg();
+                  showGSBMP(skewvirticalImg);
+                  break;
                 default:
                     cout<<"Invalid filter\n";
 
@@ -398,6 +426,159 @@ void choose(){ //function choose that help user to choose what change he wants t
     }
 }
 
+        //___________filter 9: shrink______________
+void shrink(int dimension){ // function take amount of shrink from user and call the function of shrink of that amount
+    if(dimension==1/4){
+        void quartershrink();
+    }
+    else if(dimension==1/3){
+        void thirdshrink();
+    }
+    else {
+        void halfshrink();
+    }
+}
+void quartershrink(){
+    // to shrink the image to its quarter the user give the amount of how toshrink
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            shrinkImg[i][j]=255;// give the pixel of the image white color by equal it to 255
+        }
+    }
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            if((i*4)<=255&&(j*4)<=255){// condition to avoid the image to be out of range
+                shrinkImg[i][j]=image[i*4][j*4];// to reduce image to its quarter we multiply it by 4
+            }
+
+        }
+    }
+}
+// to shrink the image to its third the user give the amount of how toshrink
+void thirdshrink(){
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            shrinkImg[i][j]=255;// give the pixel of the image white color by equal it to 255
+        }
+    }
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            if((i*3)<=255&&(j*3)<=255){// condition to avoid the image to be out of range
+                shrinkImg[i][j]=image[i*3][j*3];// to reduce image to its third we multiply it by 3
+            }
+
+        }
+    }
+}
+// to shrink the image to its third the user give the amount of how toshrink
+void halfshrink(){
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+            shrinkImg[i][j]=255;// give the pixel of the image white color by equal it to 255
+        }
+    }
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++){
+// in this case we make it 1.95 not 2 as when multiply it by 2 it will not reduce to half of image as we need
+
+            float x= 1.95;
+            if(int(i*x)<=255&&int(j*x)<=255){// condition to avoid the image to be out of range
+                shrinkImg[i][j]=image[int(i*x)][int(j*x)];
+            }
+
+        }
+    }
+}
+void saveshrinkImg(){ //function to save shrink image
+      char imageFileName[100];
+
+    // Get gray scale image target file name
+    cout << "Enter the target image file name: ";
+    cin >> imageFileName;
+
+    // Add to it .bmp extension and load image
+    strcat (imageFileName, ".bmp");
+
+    writeGSBMP(imageFileName,shrinkImg);
+}
+void blurfilter() {// this function is used to take photo from user and blur it
+    for (int i = 1; i < SIZE; i++) {
+        for (int j = 1; j < SIZE; j++) {
+            int x = -1, y = -1, sum = 0, num = 0;
+            while (x <= 10) {
+                while (y <= 10) {// to give strong blur we sum 10 pixels together
+                    sum += image[i + x][j + y];
+                    y++;
+                    num++;
+                }
+                x++;
+            }
+            blurImg[i - 1][j - 1] = sum / num; // we equal the pixel with new value which is average of 10 pixels
+        }
+    }
+}
+void saveblurImg(){ //function to save blur image
+      char imageFileName[100];
+
+    // Get gray scale image target file name
+    cout << "Enter the target image file name: ";
+    cin >> imageFileName;
+
+    // Add to it .bmp extension and load image
+    strcat (imageFileName, ".bmp");
+
+    writeGSBMP(imageFileName,blurImg);
+}
+// skew vertical function which take the degree to skew photo fromthe user
+void skewVertically(double angletochange) {
+    double lenght = tan((angletochange * 22) / (7 * 180));//the lenght of side front of the angle
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            skewvirticalImg[i][j] = 255;
+        }
+    }
+// for loops to shrink the image
+    double ans3 = SIZE / (SIZE - (256 * lenght)); // the range to shrink the pixels
+    for (int j = 0; j < SIZE; j++) {
+        int cnt = 1 ;//move the new size after shrink
+        for (int i = 0; i < SIZE && cnt <= (SIZE - (256 * lenght)) ; i++) {
+            int sum = 0, num = 0;
+            for (; i <= (ans3 * cnt) && i < SIZE ; i++) {
+                sum += image[i][j];// calculate sum of pixels to the range of shrink
+                num++;
+                if (i+1 > (ans3 * cnt) ){
+                    break;
+                }
+            }
+            image[cnt-1][j] = sum / num; // the average which will be given to the newpixels
+            cnt++;
+        }
+    }
+    // for loops to skew the image vertically
+    double step = (lenght * 256);
+    double move = step / SIZE;
+    int anss = SIZE;
+    for (int j = 0; j < SIZE; j++) {
+        anss = SIZE - ((SIZE * lenght) - step);
+        for (int i = step; i < anss; i++) {
+            skewvirticalImg[i][j] = image[int(i - step)][j];
+        }
+        step -= move;
+    }
+}
+void saveskewvirticalImg(){//function to save skewvertically image 
+      char imageFileName[100];
+
+    // Get gray scale image target file name
+    cout << "Enter the target image file name: ";
+    cin >> imageFileName;
+
+    // Add to it .bmp extension and load image
+    strcat (imageFileName, ".bmp");
+
+    writeGSBMP(imageFileName,skewvirticalImg);
+}
 void saveDarkImg () { //function to save image after darken it
     char imageFileName[100];
 
