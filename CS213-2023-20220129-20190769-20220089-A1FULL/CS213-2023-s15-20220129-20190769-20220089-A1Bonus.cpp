@@ -22,12 +22,9 @@ unsigned char coloredImage2[SIZE][SIZE][RGB];
 unsigned char black_white_image[SIZE][SIZE]; //black and white img
 unsigned char flippedColoredImg[SIZE][SIZE][RGB];
 unsigned char coloredInvertedImg[SIZE][SIZE][RGB];
-
 unsigned char croppedColoredImage[SIZE][SIZE][RGB];
-
 unsigned char mergeColoredImg[SIZE][SIZE][RGB];
 unsigned char shrinkcoloredImg[SIZE][SIZE][RGB];
-
 unsigned char darkerandlightercolorImage[SIZE][SIZE][RGB];
 unsigned char blurColoredImg[SIZE][SIZE][RGB];
 unsigned char skewverticallycoloredImg[SIZE][SIZE][RGB];
@@ -38,24 +35,27 @@ void BlackAndWhiteColored(); //filter 1
 void invertColored() ;//filter 2
 void flipColored();//filter 4
 void Rotated_color();//filter 5
-void enlargeColoerd_quarter();//filter 8
+void enlargeColored_quarter();//filter 8
 void detectColored();//filter 7
 void mirrorColored();//filter a
 void Shuffle_ColoredImage();//filter b
 void cropColored();//filter d
-void skew_Coloredimage();//filter e
-void mergedColored() ;//filter 3
-void shrinkColored();//filter 9
+void skewColoredimage();//filter e
+void mergeColor() ;//filter 3
+void shrinkColored(int dimensiontochange);//filter 9
 void blurColored();//filter c
 void choose();//filter 6
-void darkercolored();//filter 6
-void lighterColored();//filter 6
-void skewverticallyColored();//filter f
+void darkerColor();//filter 6
+void lighterColor();//filter 6
+void skewVerticallyColored(double angle_to_change);//filter f
+void shrinkColorQuarter();
+void shrinkColorThird();
+void shrinkColorHalf();
 //*****functions to save images after processing
 void saveImage ();
 
 void saveBlackWhite ();
-
+void loadColoredImage2();
 void saveFlippedColoredImage () ;
 
 void saveInvertedColoredImg();
@@ -110,7 +110,7 @@ int main()
                     break;
                 case '3':// filter to merge two color images together
                     loadColoredImage();
-                    mergedColored();
+                    mergeColor();
                     saveColoredImg();
                     showRGBBMP(mergeColoredImg);
                     break;
@@ -121,17 +121,19 @@ int main()
                     saveFlippedColoredImage();
                     showRGBBMP(flippedColoredImg);
                     break;
-                case '5': //filter 6: Rotate colored Image()
-                    loadImage ();
-                    Rotated_color();
-                    saveImage ();
-                    showRGBBMP( image);
-                case'6':// filter to make colored images reach 50% lighter or darker
+                case'5':// filter 5 to make colored images reach 50% lighter or darker
                     loadColoredImage();
                     choose();
                     saveColoredImg();
                     showRGBBMP(darkerandlightercolorImage);
                     break;
+                case '6': //filter 6: Rotate colored Image()
+                    loadImage ();
+                    Rotated_color();
+                    saveImage ();
+                    showRGBBMP( image);
+                    break;
+
 
                 case '7': //filter 7: Detect colored Image
                     loadColoredImage();
@@ -141,9 +143,19 @@ int main()
                     break;
                 case '8': //filter 8: enlarged colored Image()
                     loadImage ();
-                    enlargeColoerd_quarter();
+                    enlargeColored_quarter();
                     saveImage ();
                     showRGBBMP( image);
+                    break;
+                case'9'://shrink colored image
+                    loadColoredImage();
+                    int change_dimension;
+                    cout<<"Shrink to (1/2), (1/3) or (1/4)?";
+                    cin>>change_dimension;
+                    shrinkColored(change_dimension);
+                    saveColoredImg();
+                    showRGBBMP(shrinkcoloredImg);
+                    break;
                 case 'a': //filter a: mirror colored Image
                     loadColoredImage();
                     mirrorColored();
@@ -155,6 +167,7 @@ int main()
                     Shuffle_ColoredImage();
                     saveImage ();
                     showRGBBMP( image);
+                    break;
                 case'c':// filter to blur colored images
                     loadColoredImage();
                     blurColored();
@@ -170,12 +183,16 @@ int main()
                     break;
                 case 'e': //filter e:  skew colored Image horizontally()
                     loadImage ();
-                    skew_Coloredimage();
+                    skewColoredimage();
                     saveImage ();
                     showRGBBMP( image);
+                    break;
                 case 'f':
                     loadColoredImage();
-                    skewverticallyColored();
+                    double angle;
+                    cout<<"Enter the angle of skew";
+                    cin>>angle;
+                    skewVerticallyColored(angle);
                     saveColoredImg();
                     showRGBBMP(skewverticallycoloredImg);
                     break;
@@ -229,6 +246,18 @@ void loadColoredImage () { // function to load colored image we will make change
     // Add to it .bmp extension and load image
     strcat (imageFileName, ".bmp");
     readRGBBMP(imageFileName, coloredImage);
+}
+
+void loadColoredImage2 () { // function to load colored image we will make change on it
+    char imageFileName[100];
+
+    // Get  colored image file name
+    cout << "Enter the source image file name: ";
+    cin >> imageFileName;
+
+    // Add to it .bmp extension and load image
+    strcat (imageFileName, ".bmp");
+    readRGBBMP(imageFileName, coloredImage2);
 }
 //_________________________________________
 //filter 1 convert colored image to black_white_image
@@ -310,7 +339,7 @@ void saveInvertedColoredImg(){ //function to save inverted colored image
 //____________________filter 3__________________________
 // merge filter which take average of the two images i want to merge
 
-void mergecolor(){
+void mergeColor(){
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
             for(int k=0;k<RGB;k++){
@@ -372,7 +401,7 @@ void saveFlippedColoredImage () { //function to save flipped colored  image
 }
 //____________________________(filter 5 rotate color image)__________________________
 void Rotated_color() {
-    cout << "Enter the angle of rotation";//user enter angle of rotation.
+    cout << "Enter the angle of rotation (90-180-270)";//user enter angle of rotation.
     int angle;
     cin >> angle;
     unsigned char rotatedImage[SIZE][SIZE][RGB];
@@ -436,7 +465,7 @@ void Rotated_color() {
 }
 
 //filter 6__________
-void darkercolor(){//darken filter it make the image darker to 50%
+void darkerColor(){//darken filter it make the image darker to 50%
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
             for(int k=0;k<RGB;k++){
@@ -446,7 +475,7 @@ void darkercolor(){//darken filter it make the image darker to 50%
         }
     }
 }
-void lightercolor(){ //darken filter it make the image lighter to 50%
+void lighterColor(){ //darken filter it make the image lighter to 50%
 
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
@@ -457,14 +486,15 @@ void lightercolor(){ //darken filter it make the image lighter to 50%
         }
     }
 }
+char type;
 void choose(){ //function choose that help user to choose what change he need to make in image
 
     cout<<"Do you want to (d)arken or (l)ighten?(enter one character dor l)"<<"\n";
     cin>>type;//the user will enter char d or l to choode the change he want
     if(type=='d'){
-        darkercolored();
+        darkerColor();
     }
-    else lighterColored();
+    else lighterColor();
 }
 
 // filter 7 detect colored image
@@ -515,7 +545,7 @@ void saveColoredImg () { // function to save colored image
 
 }
 //__________________________________(filter 8 enlarge colored image)_______________
-void enlargeColoerd_quarter() {
+void enlargeColored_quarter() {
     int quarter;
     unsigned char arr[SIZE][SIZE][RGB];// declare a new array to fill the new enlarged image on it.
     cout << "Enter the quarter: ";//user enters the targeted quarter to be enlarged.
@@ -563,17 +593,17 @@ void enlargeColoerd_quarter() {
 
 void shrinkColored(int d){
     if(d==1/4){
-        void shrinkcolorquarter();
+        shrinkColorQuarter();
     }
     else if(d==1/3){
-        void shrinkcolorthird();
+        shrinkColorThird();
     }
     else {
-        void shrinkcolorhalf();
+        shrinkColorHalf();
     }
 }
 // to shrink the image to its quarter the user give the amount of how toshrink
-void shrinkcolorquarter(){
+void shrinkColorQuarter(){
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
             for(int k=0;k<RGB;k++){
@@ -595,7 +625,7 @@ void shrinkcolorquarter(){
 }
 // to shrink the image to its third the user give the amount of how toshrink
 
-void shrinkcolorthird(){
+void shrinkColorThird(){
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
             for(int k=0;k<RGB;k++){
@@ -617,7 +647,7 @@ void shrinkcolorthird(){
 }
 // to shrink the image to its third the user give the amount of how toshrink
 
-void shrinkcolorhalf() {
+void shrinkColorHalf() {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             for (int k = 0; k < RGB; k++) {
@@ -1019,7 +1049,7 @@ void saveCroppedColoredImg () { // function to save cropped colored image
 
 }
 //__________________________________(filter e skew colored image horizontally)__________________
-void skew_Coloredimage() {
+void skewColoredimage() {
     unsigned char IMG_1[SIZE][SIZE][RGB];
     unsigned char IMG_2[SIZE][SIZE][RGB];//initializes two arrays to hold skew image during program
     for(int i=0;i<SIZE;++i){//nested loop to initializes all element to color scale
@@ -1052,7 +1082,7 @@ void skew_Coloredimage() {
         }
         STP -= MOV;
     }
-    for(int i=0;i<SIZE;i++) {//Finally,copy the skew image into original image 
+    for(int i=0;i<SIZE;i++) {//Finally,copy the skew image into original image
         for (int j = 0; j < SIZE; ++j) {
             for (int k = 0; k < RGB; k++) {
                 image[i][j][k] = IMG_2[i][j][k];
@@ -1065,49 +1095,44 @@ void skew_Coloredimage() {
 
 
 //filterf________________
-void skewverticallyColored(double angletochange) {
-    double lenght = tan((angletochange * 22) / (7 * 180));//the lenght of side front of the angle
+unsigned char imagetwo[SIZE][SIZE][RGB];
+unsigned char imagethree[SIZE][SIZE][RGB];
+void skewVerticallyColored(double angle_to_change) {
 
-    for (int i = 0; i < SIZE; i++) {
-        for (int j = 0; j < SIZE; j++) {
-            for(int k=0;k<RGB;k++){skewverticallycoloredImg[i][j][k] = 255;}
 
-        }
-    }
-// for loops to shrink the image
-    double ans3 = SIZE / (SIZE - (256 * lenght));
-    for (int k = 0; k < RGB; k++) {// the range to shrink the pixels
-        for (int j = 0; j < SIZE; j++) {
-            int cnt = 1 ;//move the new size after shrink
-            for (int i = 0; i < SIZE && cnt <= (SIZE - (256 * lenght)) ; i++) {
-                int sum = 0, num = 0;
-                for (; i <= (ans3 * cnt) && i < SIZE ; i++) {
-
-                    sum += coloredImage[i][j][k];// calculate sum of pixels to the range of shrink
-                    num++;
-                    if (i + 1 > (ans3 * cnt)) {
-                        break;
-
-                    }
-                }
-                coloredImage[cnt - 1][j][k] = sum / num; // the average which will be given to the newpixels
-                cnt++;
-
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            for (int k = 0; k < RGB; k++) {
+                imagetwo[i][j][k] = 255;
+                imagethree[i][j][k] = 255;
             }
+        }
 
+    }
+
+    angle_to_change = (angle_to_change * 22) / (180 * 7);
+    int oppositeside = (int) (SIZE / (1 + tan(angle_to_change)));
+    double step = SIZE - oppositeside;
+    double move = step / SIZE;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            for(int k=0;k<RGB;k++)
+                imagetwo[(i * oppositeside) / SIZE][j] [k]= coloredImage[i][j][k];
         }
     }
-    // for loops to skew the image vertically
-    double step = (lenght * 256);
-    double move = step / SIZE;
-    int anss = SIZE;
-    for (int j = 0; j < SIZE; j++) {
-        anss = SIZE - ((SIZE * lenght) - step);
-        for (int i = step; i < anss; i++) {
-            for(int k=0;k<RGB;k++){skewverticallycoloredImg[i][j][k] = coloredImage[int(i - step)][j][k];}
 
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = (int) step; j < step + oppositeside; ++j) {
+            for(int k=0;k<RGB;k++)
+                imagethree[j][i][k] = imagetwo[(int) (j - step)][i][k];
         }
         step -= move;
     }
-}
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            for(int k=0;k<RGB;k++)
+                skewverticallycoloredImg[i][j][k] = imagethree[i][j][k];
+        }
+    }
 
+}
