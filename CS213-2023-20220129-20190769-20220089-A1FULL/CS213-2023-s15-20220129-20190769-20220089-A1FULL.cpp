@@ -1,6 +1,6 @@
 // FCAI – OOP Programming – 2023 - Assignment 1
 // Program Name:				ImgProccesing.cpp
-// Last Modification Date:	19/10/2023
+// Last Modification Date:	8/10/2023
 // Author1 and ID and Group:	Roqaia Hassan Hassan , ID:20220129,email:roqaiahassanahmed@gmail.com
 // Author2 and ID and Group:	Fatima Atef Mahmoud,ID: 20190769,email:Atiff3368@gmail.com
 // Author3 and ID and Group:	Tasnim Gomaa Anter ,ID:20220089,email:Tasneemgomaa126@gmail.com
@@ -29,7 +29,7 @@ unsigned char rotatedImage[SIZE][SIZE];
 unsigned char croppedImage[SIZE][SIZE];
 unsigned char blurImg[SIZE][SIZE];
 unsigned char shrinkImg[SIZE][SIZE];
-unsigned char skewverticalImg[SIZE][SIZE];
+unsigned char skewVerticalImg[SIZE][SIZE];
 
 
 //Functions Declaration//
@@ -39,19 +39,19 @@ void loadImage1 ();
 void loadImage2 ();
 void BlackAndWhite (); //filter 1
 void invertGray() ;//filter 2
-void merge(); //filter 3
+void Merge(); //filter 3
 void flipGray();//filter 4
 void rotateGray();//filter 5
-void darken();void lighten(); //filter 6
+void Darken();void Lighten(); //filter 6
 void detect();//filter 7
 void enlarge_quarter();//filter 8
-void shrink(int dimensiontochange);//filter 9
+void Shrink(float dimension_to_change);//filter 9
 void mirrorGray();//filter a
 void Shuffle_Image();//filter b
-void blur();//filter c
+void Blur();//filter c
 void cropGray();//filter d
 void skew_image();//filter e
-void skew_vertically(double angletochange);//filter f
+void SkewVertically(double angle_to_change);//filter f
 
 
 
@@ -64,14 +64,14 @@ void saveLightImg ();
 void saveInvertedImg ();
 void saveRotatedImg ();
 void saveGrayImg();
-void savecroppedImg ();
-void saveblurImg();
-void saveshrinkImg();
-void saveskewverticalImg();
+void saveCroppedImg ();
+void saveBlurImg();
+void saveShrinkImg();
+void saveSkewVerticalImg();
 void choose();//function choose that help user to choose what change he wants to make in image(darken or lighten)
-void quartershrink();
-void thirdshrink();
-void halfshrink();
+void quarterShrink();
+void thirdShrink();
+void halfShrink();
 //**main program**//
 int main()
 {
@@ -122,7 +122,7 @@ int main()
 
                     loadImage1();
                     loadImage2();
-                    merge();
+                    Merge();
                     saveMergedImage();
                     showGSBMP(mergedImage);
                     break;
@@ -146,7 +146,6 @@ int main()
                     loadGrayImage();
                     detect();
                     saveGrayImg();
-
                     showGSBMP(grayImage);
                     break;
                 case '8': //filter 8: enlarge a quarter of an image
@@ -157,9 +156,11 @@ int main()
                     break;
                 case '9':// filter 9: shrink of an image
                     loadImage();
-                    int changedeminison;
-                    shrink(changedeminison);
-                    saveshrinkImg();
+                    float changeDimension;
+                    cout<<"Shrink to (1/2), (1/3) or (1/4)?";
+                    cin>>changeDimension;
+                    Shrink(changeDimension);
+                    saveShrinkImg();
                     showGSBMP(shrinkImg);
                     break;
                 case 'a': //filter a: mirror Image
@@ -175,14 +176,14 @@ int main()
                     break;
                 case 'c':// filter c: blur of image
                     loadImage();
-                    blur();
-                    saveblurImg();
+                    Blur();
+                    saveBlurImg();
                     showGSBMP(blurImg);
                     break;
                 case 'd':
                     loadGrayImage();
                     cropGray();
-                    savecroppedImg();
+                    saveCroppedImg();
                     showGSBMP(croppedImage);
 
                     break;
@@ -197,9 +198,9 @@ int main()
                     double angle;
                     cout<<"Enter the angle of skew";
                     cin>>angle;
-                    skew_vertically(angle);
-                    saveskewverticalImg();
-                    showGSBMP(skewverticalImg);
+                    SkewVertically(angle);
+                    saveSkewVerticalImg();
+                    showGSBMP(skewVerticalImg);
                     break;
                 default:
                     cout<<"Invalid filter\n";
@@ -323,7 +324,7 @@ void loadImage2() {
 
 }
 //filter 3 merge filter which take average of the two images user want to merge
-void merge(){
+void Merge(){
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){      //we make nested loop that loop over every pixel
 
@@ -395,7 +396,7 @@ void saveFlippedImage () { //function to save flipped image
 }
 
 //filter 5//
-void darken(){//darken filter which make the image darker to 50%
+void Darken(){//darken filter which make the image darker to 50%
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
             //we make nested loop that loop over every pixel
@@ -404,7 +405,7 @@ void darken(){//darken filter which make the image darker to 50%
     }
 
 }
-void lighten() {//darken filter which make the image lighter to 50%
+void Lighten() {//darken filter which make the image lighter to 50%
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {            //we make nested loop that loop over every pixel
 
@@ -420,30 +421,30 @@ void choose(){ //function choose that help user to choose what change he wants t
     cout<<"Do you want to (d)arken or (l)ighten?(enter one character d or l)"<<"\n";
     cin>>type;//the user will enter char d or l to choose the change he wants
     if(type=='d'){
-        darken();
+        Darken();
         saveDarkImg();
         showGSBMP(darkImage);
     }
     else if(type=='l'){
-        lighten();
+        Lighten();
         saveLightImg();
         showGSBMP(lightImage);
     }
 }
 
 //___________filter 9: shrink______________
-void shrink(int dimension){ // function take amount of shrink from user and call the function of shrink of that amount
+void Shrink(float dimension){ // function take amount of shrink from user and call the function of shrink of that amount
     if(dimension==1/4){
-        quartershrink();
+        quarterShrink();
     }
-    else if(dimension==1/3){
-        thirdshrink();
+    if(dimension==1/3){
+        thirdShrink();
     }
     else {
-        halfshrink();
+        halfShrink();
     }
 }
-void quartershrink(){
+void quarterShrink(){
     // to shrink the image to its quarter the user give the amount of how toshrink
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
@@ -460,7 +461,7 @@ void quartershrink(){
     }
 }
 // to shrink the image to its third the user give the amount of how toshrink
-void thirdshrink(){
+void thirdShrink(){
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
             shrinkImg[i][j]=255;// give the pixel of the image white color by equal it to 255
@@ -476,7 +477,7 @@ void thirdshrink(){
     }
 }
 // to shrink the image to its third the user give the amount of how toshrink
-void halfshrink(){
+void halfShrink(){
     for(int i=0;i<SIZE;i++){
         for(int j=0;j<SIZE;j++){
             shrinkImg[i][j]=255;// give the pixel of the image white color by equal it to 255
@@ -494,7 +495,7 @@ void halfshrink(){
         }
     }
 }
-void saveshrinkImg(){ //function to save shrink image
+void saveShrinkImg(){ //function to save shrink image
     char imageFileName[100];
 
     // Get gray scale image target file name
@@ -506,7 +507,9 @@ void saveshrinkImg(){ //function to save shrink image
 
     writeGSBMP(imageFileName,shrinkImg);
 }
-void blur() {// this function is used to take photo from user and blur it
+
+
+void Blur() {// this function is used to take photo from user and blur it
     for (int i = 1; i < SIZE; i++) {
         for (int j = 1; j < SIZE; j++) {
             int x = -1, y = -1, sum = 0, num = 0;
@@ -522,7 +525,7 @@ void blur() {// this function is used to take photo from user and blur it
         }
     }
 }
-void saveblurImg(){ //function to save blur image
+void saveBlurImg(){ //function to save blur image
     char imageFileName[100];
 
     // Get gray scale image target file name
@@ -537,41 +540,41 @@ void saveblurImg(){ //function to save blur image
 // skew vertical function which take the degree to skew photo fromthe user
 unsigned imageone[SIZE][SIZE];
 unsigned imagetwo[SIZE][SIZE];
-void skew_vertically(double angletochange) {
+void SkewVertically(double angletochange) {
 
 
-        for (int i = 0; i < SIZE ; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                imageone[i][j] = 255;
-                imagetwo[i][j] = 255;
-            }
-        }
-
-    angletochange = (angletochange * 22) / (180 * 7);
-        int oppositeside = (int)(SIZE / ( 1 + tan(angletochange)));
-        double step = SIZE - oppositeside;
-        double move = step/ SIZE;
-        for (int i = 0; i < SIZE ; ++i) {
-            for (int j = 0; j < SIZE ; ++j) {
-                imageone[(i*oppositeside)/SIZE][j] = image[i][j];
-            }
-        }
-
-        for (int i = 0; i <SIZE ; ++i) {
-            for (int j = (int)step; j < step+oppositeside ; ++j) {
-                imagetwo[j][i] = imageone[(int)(j-step)][i];
-            }
-            step -= move;
-        }
-        for (int i = 0; i < SIZE; ++i) {
-            for (int j = 0; j < SIZE; ++j) {
-                skewverticalImg[i][j] = imagetwo[i][j];
-            }
+    for (int i = 0; i < SIZE ; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            imageone[i][j] = 255;
+            imagetwo[i][j] = 255;
         }
     }
 
+    angletochange = (angletochange * 22) / (180 * 7);
+    int oppositeside = (int)(SIZE / ( 1 + tan(angletochange)));
+    double step = SIZE - oppositeside;
+    double move = step/ SIZE;
+    for (int i = 0; i < SIZE ; ++i) {
+        for (int j = 0; j < SIZE ; ++j) {
+            imageone[(i*oppositeside)/SIZE][j] = image[i][j];
+        }
+    }
 
-void saveskewverticalImg(){//function to save skewvertically image
+    for (int i = 0; i <SIZE ; ++i) {
+        for (int j = (int)step; j < step+oppositeside ; ++j) {
+            imagetwo[j][i] = imageone[(int)(j-step)][i];
+        }
+        step -= move;
+    }
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            skewVerticalImg[i][j] = imagetwo[i][j];
+        }
+    }
+}
+
+
+void saveSkewVerticalImg(){//function to save skewvertically image
     char imageFileName[100];
 
     // Get gray scale image target file name
@@ -581,7 +584,7 @@ void saveskewverticalImg(){//function to save skewvertically image
     // Add to it .bmp extension and load image
     strcat (imageFileName, ".bmp");
 
-    writeGSBMP(imageFileName,skewverticalImg);
+    writeGSBMP(imageFileName,skewVerticalImg);
 }
 void saveDarkImg () { //function to save image after darken it
     char imageFileName[100];
@@ -1076,7 +1079,7 @@ void cropGray(){
 
 }
 
-void savecroppedImg () { // function to save cropped image
+void saveCroppedImg () { // function to save cropped image
     char imageFileName[100];
 
     // Get gray scale image target file name
