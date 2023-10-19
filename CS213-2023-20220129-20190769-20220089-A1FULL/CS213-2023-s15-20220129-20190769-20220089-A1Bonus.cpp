@@ -601,6 +601,52 @@ void saveCroppedColoredImg () { // function to save cropped colored image
     writeRGBBMP(imageFileName,croppedColoredImage);
 
 }
+//filterf________________
+void skewverticallyColored(double angletochange) {
+    double lenght = tan((angletochange * 22) / (7 * 180));//the lenght of side front of the angle
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            for(int k=0;k<RGB;k++){skewverticallycoloredImg[i][j][k] = 255;}
+
+        }
+    }
+// for loops to shrink the image
+    double ans3 = SIZE / (SIZE - (256 * lenght));
+    for (int k = 0; k < RGB; k++) {// the range to shrink the pixels
+    for (int j = 0; j < SIZE; j++) {
+        int cnt = 1 ;//move the new size after shrink
+        for (int i = 0; i < SIZE && cnt <= (SIZE - (256 * lenght)) ; i++) {
+            int sum = 0, num = 0;
+            for (; i <= (ans3 * cnt) && i < SIZE ; i++) {
+
+                sum += coloredImage[i][j][k];// calculate sum of pixels to the range of shrink
+                num++;
+                if (i + 1 > (ans3 * cnt)) {
+                    break;
+
+                }
+            }
+                coloredImage[cnt - 1][j][k] = sum / num; // the average which will be given to the newpixels
+                cnt++;
+
+            }
+
+        }
+    }
+    // for loops to skew the image vertically
+    double step = (lenght * 256);
+    double move = step / SIZE;
+    int anss = SIZE;
+    for (int j = 0; j < SIZE; j++) {
+        anss = SIZE - ((SIZE * lenght) - step);
+        for (int i = step; i < anss; i++) {
+            for(int k=0;k<RGB;k++){skewverticallycoloredImg[i][j][k] = coloredImage[int(i - step)][j][k];}
+
+        }
+        step -= move;
+    }
+}
 
 
 
